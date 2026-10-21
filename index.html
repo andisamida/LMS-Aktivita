@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktivita LMS - Akuntansi SMK</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 40%, #fff1f2 100%);
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(249, 168, 212, 0.35);
+            box-shadow: 0 10px 30px -5px rgba(236, 72, 153, 0.08);
+        }
+
+        .glass-sidebar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(249, 168, 212, 0.3);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(249, 168, 212, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fce7f3;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ec4899;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        .animate-glow {
+            animation: pulseGlow 6s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Ambient Floating Orbs -->
+    <div class="fixed -top-20 -left-20 w-96 h-96 bg-brand-200/50 rounded-full blur-3xl pointer-events-none animate-glow"></div>
+    <div class="fixed -bottom-20 -right-20 w-96 h-96 bg-rose-200/50 rounded-full blur-3xl pointer-events-none animate-glow" style="animation-delay: 3s;"></div>
+
+    <!-- MAIN WRAPPER WITH SIDEBAR -->
+    <div class="flex h-screen overflow-hidden relative z-10">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="glass-sidebar w-64 flex-shrink-0 flex flex-col justify-between transition-all duration-300 absolute md:relative z-30 h-full -translate-x-full md:translate-x-0">
+            <!-- Sidebar Header -->
+            <div>
+                <div class="p-5 flex items-center justify-between border-b border-brand-100">
+                    <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 via-rose-400 to-brand-300 flex items-center justify-center text-white shadow-lg shadow-brand-300/50">
+                            <i class="fa-solid fa-calculator text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-lg font-extrabold bg-gradient-to-r from-brand-700 to-rose-500 bg-clip-text text-transparent">Aktivita LMS</span>
+                            <span class="block text-[10px] font-bold text-brand-500 tracking-wider">AKUNTANSI SMK</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleSidebar()" class="md:hidden text-brand-600 p-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Items -->
+                <nav class="p-4 space-y-1.5" id="sidebar-nav-container">
+                    <!-- Populated dynamically -->
+                </nav>
+            </div>
+
+            <!-- Sidebar Footer (Quick Info) -->
+            <div class="p-4 border-t border-brand-100">
+                <div class="glass-card p-3 rounded-2xl border border-brand-200 flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-graduation-cap text-xs"></i>
+                    </div>
+                    <div class="text-[11px]">
+                        <div class="font-bold text-slate-800">SMK Akuntansi</div>
+                        <div class="text-brand-600 font-semibold">Kurikulum Merdeka</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-grow flex flex-col h-full overflow-hidden">
+
+            <!-- TOP NAVBAR -->
+            <header class="glass-header px-6 py-3.5 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-xl bg-brand-100 text-brand-600">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <div>
+                        <h2 id="page-title" class="text-lg font-extrabold text-slate-800">Dashboard Utama</h2>
+                        <p class="text-[11px] text-slate-500">Aktivitas Pembelajaran Akuntansi Keuangan</p>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3">
+                    
+                    <!-- Points Badge (Siswa Only) -->
+                    <div id="points-badge-container" class="flex items-center space-x-2 bg-gradient-to-r from-amber-400 via-pink-500 to-brand-500 text-white px-3.5 py-1.5 rounded-full text-xs font-extrabold shadow-md shadow-brand-200">
+                        <i class="fa-solid fa-star text-amber-200 animate-spin" style="animation-duration: 10s;"></i>
+                        <span id="user-points-display">350 Poin</span>
+                    </div>
+
+                    <!-- Role Selector Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleRoleDropdown()" class="flex items-center space-x-3 bg-white hover:bg-brand-50 border border-brand-200 p-1.5 pr-3 rounded-2xl shadow-sm transition-all">
+                            <img id="header-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Siti&backgroundColor=f472b6" alt="Avatar" class="w-8 h-8 rounded-xl border border-brand-300 bg-brand-100">
+                            <div class="text-left hidden sm:block">
+                                <div id="header-user-name" class="text-xs font-bold text-slate-800 leading-tight">Siti Rahma</div>
+                                <div id="header-user-role" class="text-[10px] font-medium text-brand-600">Siswa Kelas X</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-brand-500 ml-1"></i>
+                        </button>
+
+                        <!-- Role Dropdown Menu -->
+                        <div id="role-dropdown" class="hidden absolute right-0 mt-2 w-72 glass-card rounded-2xl shadow-2xl p-3 border border-brand-200 z-50">
+                            <div class="text-[11px] font-bold text-brand-700 px-3 py-1.5 uppercase tracking-wider">Ganti Role / Pengguna</div>
+                            <div class="space-y-1 mt-1">
+                                <button onclick="switchRole('siswa_x')" class="w-full text-left flex items-center space-x-3 p-2 rounded-xl hover:bg-brand-100/80 transition-colors">
+                                    <div class="w-7 h-7 rounded-lg bg-brand-200 text-brand-700 font-bold text-xs flex items-center justify-center">X</div>
+                                    <div>
+                                        <div class="text-xs font-bold text-slate-800">Siti Rahma</div>
+                                        <div class="text-[10px] text-brand-600">Siswa Kelas X (Dasar Akuntansi)</div>
+                                    </div>
+                                </button>
+                                <button onclick="switchRole('siswa_xi')" class="w-full text-left flex items-center space-x-3 p-2 rounded-xl hover:bg-brand-100/80 transition-colors">
+                                    <div class="w-7 h-7 rounded-lg bg-rose-200 text-rose-700 font-bold text-xs flex items-center justify-center">XI</div>
+                                    <div>
+                                        <div class="text-xs font-bold text-slate-800">Nabila Putri</div>
+                                        <div class="text-[10px] text-brand-600">Siswa Kelas XI (Pajak & Keuangan)</div>
+                                    </div>
+                                </button>
+                                <button onclick="switchRole('siswa_xii')" class="w-full text-left flex items-center space-x-3 p-2 rounded-xl hover:bg-brand-100/80 transition-colors">
+                                    <div class="w-7 h-7 rounded-lg bg-purple-200 text-purple-700 font-bold text-xs flex items-center justify-center">XII</div>
+                                    <div>
+                                        <div class="text-xs font-bold text-slate-800">Melati Indah</div>
+                                        <div class="text-[10px] text-brand-600">Siswa Kelas XII (Manufaktur & MYOB)</div>
+                                    </div>
+                                </button>
+                                <hr class="border-brand-100 my-1">
+                                <button onclick="switchRole('guru')" class="w-full text-left flex items-center space-x-3 p-2 rounded-xl bg-gradient-to-r from-brand-500 to-rose-500 text-white hover:opacity-95 transition-opacity">
+                                    <div class="w-7 h-7 rounded-lg bg-white/20 font-bold text-xs flex items-center justify-center">
+                                        <i class="fa-solid fa-chalkboard-user"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs font-bold">Ibu Dra. Sri Wahyuni</div>
+                                        <div class="text-[10px] text-brand-100">Guru Utama Akuntansi</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </header>
+
+            <!-- SCROLLABLE PAGE BODY -->
+            <main class="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-8">
+
+                <!-- TAB 1: DASHBOARD -->
+                <div id="tab-dashboard" class="tab-content space-y-8">
+                    <!-- Welcome Hero Card -->
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-brand-200">
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                            <div class="space-y-3 text-center md:text-left">
+                                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-extrabold border border-brand-300">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <span id="welcome-badge">Siswa Aktif Kelas X ✨</span>
+                                </div>
+                                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                                    Selamat Datang, <span id="welcome-user-name" class="bg-gradient-to-r from-brand-600 to-rose-500 bg-clip-text text-transparent">Siti Rahma</span>!
+                                </h1>
+                                <p id="welcome-subtitle" class="text-xs sm:text-sm text-slate-600 max-w-xl">
+                                    Mari tingkatkan pemahaman akuntansi dasar, analisis transaksi, dan latihan jurnal umum hari ini!
+                                </p>
+                                <div class="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
+                                    <button onclick="switchTab('modul')" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-500 to-rose-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-brand-200 hover:scale-105 transition-all flex items-center space-x-2">
+                                        <i class="fa-solid fa-book-open"></i>
+                                        <span>Buka Modul Belajar</span>
+                                    </button>
+                                    <button onclick="switchTab('asesmen')" class="px-5 py-2.5 rounded-2xl bg-white text-brand-600 border border-brand-300 hover:bg-brand-50 font-bold text-xs sm:text-sm transition-all hover:scale-105 flex items-center space-x-2">
+                                        <i class="fa-solid fa-award"></i>
+                                        <span>Kerjakan Kuis</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Dashboard Mascot / Widget -->
+                            <div class="w-32 h-32 sm:w-36 sm:h-36 flex-shrink-0 relative">
+                                <div class="w-full h-full rounded-3xl bg-gradient-to-tr from-brand-400 via-rose-300 to-brand-200 p-1 shadow-xl">
+                                    <div class="w-full h-full bg-white rounded-[22px] flex flex-col items-center justify-center p-3 text-center">
+                                        <i class="fa-solid fa-chart-line text-3xl text-brand-500 mb-2"></i>
+                                        <span class="text-[10px] font-bold text-slate-500">Progres Belajar</span>
+                                        <span class="text-xs font-extrabold text-brand-600">85% Tuntas</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SISWA DASHBOARD STATS -->
+                    <div id="student-dashboard-content" class="space-y-8">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="glass-card rounded-2xl p-4 border-l-4 border-l-brand-500">
+                                <div class="text-xs text-slate-500 font-semibold">Modul Selesai</div>
+                                <div id="stat-modul-done" class="text-xl font-extrabold text-slate-800 mt-1">3 / 3</div>
+                            </div>
+                            <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
+                                <div class="text-xs text-slate-500 font-semibold">Rata-Rata Kuis</div>
+                                <div id="stat-quiz-avg" class="text-xl font-extrabold text-slate-800 mt-1">92.0</div>
+                            </div>
+                            <div class="glass-card rounded-2xl p-4 border-l-4 border-l-purple-500">
+                                <div class="text-xs text-slate-500 font-semibold">Tugas Dikirim</div>
+                                <div id="stat-tasks-sent" class="text-xl font-extrabold text-slate-800 mt-1">2 Tugas</div>
+                            </div>
+                            <div class="glass-card rounded-2xl p-4 border-l-4 border-l-amber-500">
+                                <div class="text-xs text-slate-500 font-semibold">Badge Terbuka</div>
+                                <div id="stat-badge-count" class="text-xl font-extrabold text-slate-800 mt-1">2 Badge</div>
+                            </div>
+                        </div>
+
+                        <!-- Reference Card: Debit/Credit Rules -->
+                        <div class="glass-card rounded-3xl p-6 border border-brand-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                                        <i class="fa-solid fa-scale-balanced text-brand-500"></i>
+                                        Panduan Saldo Normal Akuntansi (Debit vs Kredit)
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Gunakan tabel ringkas ini untuk membantu penjurnalan transaksi.</p>
+                                </div>
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-brand-100 text-brand-700">Quick Reference</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3" id="debit-credit-cards-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Badges Grid -->
+                        <div class="glass-card rounded-3xl p-6">
+                            <h3 class="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-medal text-brand-500"></i>
+                                Lencana / Badge Prestasi Siswa
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="badges-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GURU DASHBOARD CONTENT -->
+                    <div id="teacher-dashboard-content" class="hidden space-y-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Chart 1: Class Performance -->
+                            <div class="glass-card rounded-3xl p-6 lg:col-span-2">
+                                <h3 class="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-column text-brand-500"></i>
+                                    Rata-Rata Nilai Akuntansi Per Kelas
+                                </h3>
+                                <div class="h-64">
+                                    <canvas id="chart-class-performance"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Quiz Pass Rate -->
+                            <div class="glass-card rounded-3xl p-6">
+                                <h3 class="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-pie text-brand-500"></i>
+                                    Tingkat Kelulusan Kuis
+                                </h3>
+                                <div class="h-64 flex items-center justify-center">
+                                    <canvas id="chart-quiz-passrate"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submissions Table -->
+                        <div class="glass-card rounded-3xl p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                <div>
+                                    <h3 class="text-base font-extrabold text-slate-800">Daftar Pengumpulan Tugas Project Siswa</h3>
+                                    <p class="text-xs text-slate-500">Pilih siswa untuk memberikan nilai dan umpan balik balik.</p>
+                                </div>
+                                <button onclick="openAddModuleModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-rose-500 text-white font-bold text-xs shadow-md shadow-brand-200 hover:scale-105 transition-all flex items-center space-x-2">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Tambah Modul Baru</span>
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="bg-brand-100/70 text-brand-900 font-bold border-b border-brand-200">
+                                            <th class="p-3 rounded-l-xl">Nama Siswa</th>
+                                            <th class="p-3">Kelas</th>
+                                            <th class="p-3">Project</th>
+                                            <th class="p-3">Tanggal Kirim</th>
+                                            <th class="p-3">Status</th>
+                                            <th class="p-3 text-center rounded-r-xl">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="teacher-submissions-tbody" class="divide-y divide-brand-100">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: MODUL PEMBELAJARAN & JOURNAL SIMULATOR -->
+                <div id="tab-modul" class="tab-content hidden space-y-8">
+                    <!-- Class Filter Header -->
+                    <div class="glass-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-book-bookmark text-xl text-brand-500"></i>
+                            <h3 class="text-base font-extrabold text-slate-800">Modul Pembelajaran Akuntansi SMK</h3>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-brand-100/80 p-1 rounded-xl">
+                            <button onclick="filterModuleClass('all')" id="btn-mod-all" class="mod-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-brand-600 shadow-sm transition-all">Semua</button>
+                            <button onclick="filterModuleClass('X')" id="btn-mod-X" class="mod-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-brand-600 transition-all">Kelas X</button>
+                            <button onclick="filterModuleClass('XI')" id="btn-mod-XI" class="mod-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-brand-600 transition-all">Kelas XI</button>
+                            <button onclick="filterModuleClass('XII')" id="btn-mod-XII" class="mod-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-brand-600 transition-all">Kelas XII</button>
+                        </div>
+                    </div>
+
+                    <!-- Modules Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="modules-list-container">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <!-- Interactive Journal Simulator -->
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 border-2 border-brand-300/60 shadow-xl">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-extrabold uppercase">Simulasi Praktik</span>
+                                <h3 class="text-lg font-extrabold text-slate-900 mt-1 flex items-center gap-2">
+                                    <i class="fa-solid fa-pen-to-square text-brand-500"></i>
+                                    Latihan Penjurnalan Akuntansi (Jurnal Umum)
+                                </h3>
+                                <p class="text-xs text-slate-600">Pilih nama akun dan masukkan nominal Debit & Kredit yang tepat.</p>
+                            </div>
+                            <div class="bg-gradient-to-r from-brand-500 to-rose-500 text-white px-4 py-2 rounded-2xl text-xs font-bold shadow-md shadow-brand-200">
+                                Reward: +50 Poin / Jawaban Benar
+                            </div>
+                        </div>
+
+                        <!-- Prompt Soal -->
+                        <div class="bg-white rounded-2xl p-4 border border-brand-200 mb-6 space-y-1">
+                            <span class="text-[10px] font-bold text-brand-600 uppercase tracking-wider">Soal Transaksi:</span>
+                            <p id="journal-exercise-prompt" class="text-sm font-bold text-slate-800">
+                                "Pada tanggal 5 Mei 2026, Salon Cantika menerima pendapatan jasa merias pengantin secara tunai sebesar Rp 5.000.000."
+                            </p>
+                        </div>
+
+                        <!-- Table Jurnal -->
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="bg-brand-100 text-brand-900 font-bold">
+                                        <th class="p-3 text-left rounded-l-xl">Posisi Akun</th>
+                                        <th class="p-3 text-left">Nama Akun Akuntansi</th>
+                                        <th class="p-3 text-right">Debit (Rp)</th>
+                                        <th class="p-3 text-right rounded-r-xl">Kredit (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-brand-100">
+                                    <tr>
+                                        <td class="p-3 font-bold text-slate-700">Sisi DEBIT</td>
+                                        <td class="p-3">
+                                            <select id="journal-debit-account" class="w-full p-2.5 rounded-xl border border-brand-200 bg-white font-semibold focus:ring-2 focus:ring-brand-400 outline-none">
+                                                <option value="">-- Pilih Akun Debit --</option>
+                                                <option value="Kas">1-101 Kas Di Tangan</option>
+                                                <option value="Piutang Usaha">1-102 Piutang Usaha</option>
+                                                <option value="Perlengkapan">1-103 Perlengkapan Kantor</option>
+                                                <option value="Beban Gaji">5-101 Beban Gaji Karyawan</option>
+                                                <option value="Peralatan">1-201 Peralatan Salon</option>
+                                            </select>
+                                        </td>
+                                        <td class="p-3">
+                                            <input type="number" id="journal-debit-amount" placeholder="0" class="w-full p-2.5 rounded-xl border border-brand-200 bg-white font-bold text-right focus:ring-2 focus:ring-brand-400 outline-none">
+                                        </td>
+                                        <td class="p-3 text-right font-bold text-slate-300">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-slate-700">Sisi KREDIT</td>
+                                        <td class="p-3">
+                                            <select id="journal-credit-account" class="w-full p-2.5 rounded-xl border border-brand-200 bg-white font-semibold focus:ring-2 focus:ring-brand-400 outline-none">
+                                                <option value="">-- Pilih Akun Kredit --</option>
+                                                <option value="Kas">1-101 Kas Di Tangan</option>
+                                                <option value="Pendapatan Jasa">4-101 Pendapatan Jasa Salon</option>
+                                                <option value="Utang Usaha">2-101 Utang Usaha</option>
+                                                <option value="Modal Pemilik">3-101 Modal Pemilik</option>
+                                            </select>
+                                        </td>
+                                        <td class="p-3 text-right font-bold text-slate-300">-</td>
+                                        <td class="p-3">
+                                            <input type="number" id="journal-credit-amount" placeholder="0" class="w-full p-2.5 rounded-xl border border-brand-200 bg-white font-bold text-right focus:ring-2 focus:ring-brand-400 outline-none">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="journal-feedback" class="hidden p-4 rounded-2xl mb-4 text-xs font-bold"></div>
+
+                        <div class="flex justify-end space-x-3">
+                            <button onclick="nextJournalExercise()" class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs transition-all">Soal Selanjutnya</button>
+                            <button onclick="verifyJournalAnswer()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-rose-500 text-white font-bold text-xs shadow-lg shadow-brand-200 hover:scale-105 transition-all">
+                                Periksa Jawaban
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: KUIS & ASESMEN INTERAKTIF -->
+                <div id="tab-asesmen" class="tab-content hidden space-y-8">
+                    <div class="glass-card rounded-3xl p-6 sm:p-8">
+                        <div class="mb-6">
+                            <span class="px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-extrabold">Uji Kompetensi</span>
+                            <h2 class="text-xl font-extrabold text-slate-900 mt-1">Kuis & Ujian Akuntansi Interaktif</h2>
+                            <p class="text-xs text-slate-500">Pilih kuis sesuai tingkatan kelasmu untuk mengumpulkan poin dan badge!</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="quizzes-container">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: PORTAL TUGAS PROJECT -->
+                <div id="tab-tugas" class="tab-content hidden space-y-8">
+                    <div class="glass-card rounded-3xl p-6 sm:p-8">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-extrabold text-slate-900">Portal Unggah Tugas & Project</h2>
+                            <p class="text-xs text-slate-500">Kirimkan file laporan keuangan, lembar kerja Excel, atau laporan perpajakanmu.</p>
+                        </div>
+
+                        <div class="space-y-4" id="assignments-list-container">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL KUIS INTERAKTIF -->
+    <div id="quiz-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-brand-300 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-brand-200 pb-4 mb-4">
+                <div>
+                    <span class="text-[10px] font-bold text-brand-600 uppercase" id="quiz-modal-category">Kuis Akuntansi</span>
+                    <h3 class="text-lg font-extrabold text-slate-800" id="quiz-modal-title">Judul Kuis</h3>
+                </div>
+                <div class="flex items-center space-x-2 bg-brand-100 px-3 py-1 rounded-xl text-brand-700 font-bold text-xs">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span id="quiz-timer">02:00</span>
+                </div>
+            </div>
+
+            <div id="quiz-question-container" class="space-y-6"></div>
+
+            <div class="flex items-center justify-between border-t border-brand-200 pt-4 mt-6">
+                <button onclick="closeQuizModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Batal / Keluar</button>
+                <button id="quiz-submit-btn" onclick="submitQuiz()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-rose-500 text-white font-bold text-xs shadow-lg shadow-brand-200 hover:scale-105 transition-all">
+                    Kirim Jawaban
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PENILAIAN GURU -->
+    <div id="grading-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-white rounded-3xl max-w-lg w-full p-6 border border-brand-300 shadow-2xl">
+            <h3 class="text-lg font-extrabold text-slate-800 mb-1">Penilaian Project Siswa</h3>
+            <p id="grading-student-info" class="text-xs text-brand-600 font-bold mb-4">Siti Rahma - Project Laporan Keuangan</p>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Berikan Nilai (0 - 100)</label>
+                    <input type="number" id="grading-score-input" min="0" max="100" placeholder="95" class="w-full p-3 rounded-xl border border-brand-200 focus:ring-2 focus:ring-brand-400 outline-none font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Catatan & Umpan Balik Guru</label>
+                    <textarea id="grading-feedback-input" rows="3" placeholder="Pekerjaan jurnal sangat rapi dan neraca saldo sudah seimbang!" class="w-full p-3 rounded-xl border border-brand-200 focus:ring-2 focus:ring-brand-400 outline-none text-xs"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 mt-6">
+                <button onclick="closeGradingModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500">Batal</button>
+                <button onclick="saveStudentGrade()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-rose-500 text-white font-bold text-xs shadow-md shadow-brand-200">Simpan Nilai</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH MODUL BARU -->
+    <div id="add-module-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-white rounded-3xl max-w-md w-full p-6 border border-brand-300 shadow-2xl">
+            <h3 class="text-lg font-extrabold text-slate-800 mb-4">Tambah Modul Akuntansi Baru</h3>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-bold text-slate-700">Tingkat Kelas</label>
+                    <select id="new-mod-class" class="w-full p-2.5 rounded-xl border border-brand-200 mt-1 font-semibold">
+                        <option value="X">Kelas X</option>
+                        <option value="XI">Kelas XI</option>
+                        <option value="XII">Kelas XII</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700">Judul Modul</label>
+                    <input type="text" id="new-mod-title" placeholder="Contoh: Akuntansi Obligasi & Modal" class="w-full p-2.5 rounded-xl border border-brand-200 mt-1 font-semibold">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700">Ringkasan Materi</label>
+                    <textarea id="new-mod-desc" rows="3" placeholder="Jelaskan ringkasan materi..." class="w-full p-2.5 rounded-xl border border-brand-200 mt-1"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button onclick="closeAddModuleModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500">Batal</button>
+                <button onclick="saveNewModule()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-rose-500 text-white font-bold text-xs shadow-md">Publikasikan Modul</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* State & Data Stores */
+        const USERS = {
+            siswa_x: {
+                role: 'siswa_x',
+                name: 'Siti Rahma',
+                class: 'X Akuntansi 1',
+                points: 350,
+                level: 'Kelas X',
+                avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Siti&backgroundColor=f472b6',
+                badges: ['Penerima Pertama', 'Master Debit-Kredit'],
+                modDone: '3 / 3',
+                quizAvg: 92.0,
+                tasksSent: '2 Tugas'
+            },
+            siswa_xi: {
+                role: 'siswa_xi',
+                name: 'Nabila Putri',
+                class: 'XI Akuntansi 2',
+                points: 780,
+                level: 'Kelas XI',
+                avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Nabila&backgroundColor=fb7185',
+                badges: ['Pajak Expert', 'Master Jurnal Jasa', 'Penerima Pertama'],
+                modDone: '3 / 3',
+                quizAvg: 94.5,
+                tasksSent: '3 Tugas'
+            },
+            siswa_xii: {
+                role: 'siswa_xii',
+                name: 'Melati Indah',
+                class: 'XII Akuntansi 1',
+                points: 1250,
+                level: 'Kelas XII',
+                avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Melati&backgroundColor=db2777',
+                badges: ['Ratu MYOB', 'Auditor Muda', 'Pajak Expert', 'Master Debit-Kredit'],
+                modDone: '3 / 3',
+                quizAvg: 98.0,
+                tasksSent: '4 Tugas'
+            },
+            guru: {
+                role: 'guru',
+                name: 'Ibu Dra. Sri Wahyuni',
+                class: 'Pengajar Akuntansi',
+                points: 9999,
+                level: 'Guru Utama',
+                avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=SriWahyuni&backgroundColor=be185d'
+            }
+        };
+
+        let currentRoleKey = 'siswa_x';
+        let currentTab = 'dashboard';
+
+        let modulesData = [
+            { id: 1, classLevel: 'X', title: 'Persamaan Dasar Akuntansi', desc: 'Prinsip Keseimbangan Aset = Liabilitas + Ekuitas serta transaksi keuangan dasar.', duration: '4 JP', completed: true },
+            { id: 2, classLevel: 'X', title: 'Jurnal Umum Perusahaan Jasa', desc: 'Menganalisis mekanisme Debit/Kredit dan mencatat akun riil & nominal.', duration: '5 JP', completed: true },
+            { id: 3, classLevel: 'X', title: 'Aplikasi Spreadsheet Akuntansi', desc: 'Pembuatan laporan keuangan otomatis dengan rumus Excel/Google Sheets.', duration: '6 JP', completed: true },
+            { id: 4, classLevel: 'XI', title: 'Akuntansi Keuangan: Utang & Piutang', desc: 'Cadangan kerugian piutang tak tertagih dan penyesuaian wesel tagih.', duration: '5 JP', completed: false },
+            { id: 5, classLevel: 'XI', title: 'Perpajakan PPh Pasal 21', desc: 'Penghitungan PTKP dan potongan PPh 21 atas gaji karyawan perusahaan.', duration: '6 JP', completed: false },
+            { id: 6, classLevel: 'XII', title: 'Akuntansi Manufaktur & HPP', desc: 'Biaya Bahan Baku, Biaya Tenaga Kerja Langsung, dan Biaya Overhead Pabrik.', duration: '8 JP', completed: false },
+            { id: 7, classLevel: 'XII', title: 'Komputer Akuntansi MYOB & Accurate', desc: 'Setup data perusahaan manufaktur, entri saldo awal, dan pencetakan laporan.', duration: '10 JP', completed: false }
+        ];
+
+        const journalExercises = [
+            {
+                prompt: "Pada tanggal 5 Mei 2026, Salon Cantika menerima pendapatan jasa merias pengantin secara tunai sebesar Rp 5.000.000.",
+                debitAcc: "Kas",
+                debitAmt: 5000000,
+                creditAcc: "Pendapatan Jasa",
+                creditAmt: 5000000
+            },
+            {
+                prompt: "Pada tanggal 12 Mei 2026, dibeli perlengkapan salon secara tunai sebesar Rp 1.500.000.",
+                debitAcc: "Perlengkapan",
+                debitAmt: 1500000,
+                creditAcc: "Kas",
+                creditAmt: 1500000
+            },
+            {
+                prompt: "Pada tanggal 20 Mei 2026, dibayar gaji karyawan secara tunai sebesar Rp 3.000.000.",
+                debitAcc: "Beban Gaji",
+                debitAmt: 3000000,
+                creditAcc: "Kas",
+                creditAmt: 3000000
+            }
+        ];
+        let currentJournalIdx = 0;
+
+        const debitCreditRules = [
+            { code: 'ASET', name: 'Aset / Harta', normal: 'Debit' },
+            { code: 'LIAB', name: 'Liabilitas / Utang', normal: 'Kredit' },
+            { code: 'EKUI', name: 'Ekuitas / Modal', normal: 'Kredit' },
+            { code: 'PEND', name: 'Pendapatan Jasa', normal: 'Kredit' },
+            { code: 'BEBN', name: 'Beban / Biaya', normal: 'Debit' }
+        ];
+
+        const allBadges = [
+            { title: 'Master Debit-Kredit', icon: 'fa-scale-balanced', desc: 'Paham Saldo Normal Akun' },
+            { title: 'Pajak Expert', icon: 'fa-file-invoice-dollar', desc: 'Lulus Kuis PPh 21' },
+            { title: 'Ratu MYOB', icon: 'fa-laptop-code', desc: 'Praktikum Komputer Akuntansi' },
+            { title: 'Auditor Muda', icon: 'fa-shield-halved', desc: 'Laporan Keuangan Seimbang' }
+        ];
+
+        const quizzesData = [
+            {
+                id: 'quiz-x',
+                classLevel: 'X',
+                title: 'Kuis Persamaan Dasar & Jurnal Umum',
+                timeMinutes: 2,
+                questions: [
+                    {
+                        q: "Jika Aset bertambah Rp 10.000.000 dan Liabilitas bertambah Rp 4.000.000, maka Ekuitas akan...?",
+                        options: ["Bertambah Rp 6.000.000", "Berkurang Rp 6.000.000", "Bertambah Rp 14.000.000", "Tetap sama"],
+                        correctIdx: 0
+                    },
+                    {
+                        q: "Manakah di bawah ini akun yang bertambah di posisi Kredit?",
+                        options: ["Kas", "Beban Sewa", "Utang Usaha", "Piutang Usaha"],
+                        correctIdx: 2
+                    }
+                ]
+            },
+            {
+                id: 'quiz-xi',
+                classLevel: 'XI',
+                title: 'Kuis Perpajakan PPh 21 & Keuangan',
+                timeMinutes: 3,
+                questions: [
+                    {
+                        q: "Berapa tarif lapis pertama PPh Pasal 21 untuk Penghasilan Kena Pajak s.d. Rp 60 Juta?",
+                        options: ["5%", "15%", "25%", "35%"],
+                        correctIdx: 0
+                    }
+                ]
+            },
+            {
+                id: 'quiz-xii',
+                classLevel: 'XII',
+                title: 'Kuis Akuntansi Manufaktur & HPP',
+                timeMinutes: 3,
+                questions: [
+                    {
+                        q: "Unsur yang BUKAN merupakan bagian dari Biaya Overhead Pabrik (BOP) adalah...?",
+                        options: ["Biaya Bahan Penolong", "Gaji Mandor Pabrik", "Biaya Bahan Baku Utama", "Penyusutan Mesin"],
+                        correctIdx: 2
+                    }
+                ]
+            }
+        ];
+
+        let submissionsData = [
+            { id: 101, student: 'Siti Rahma', class: 'X AK 1', project: 'Jurnal Umum Salon Cantika', date: '21 Okt 2026', score: 95, status: 'Sudah Dinilai', feedback: 'Jurnal seimbang dan sangat rapi.' },
+            { id: 102, student: 'Nabila Putri', class: 'XI AK 2', project: 'Kertas Kerja PPh Pasal 21', date: '20 Okt 2026', score: null, status: 'Perlu Dinilai', feedback: '' },
+            { id: 103, student: 'Melati Indah', class: 'XII AK 1', project: 'Laporan Keuangan MYOB', date: '19 Okt 2026', score: 98, status: 'Sudah Dinilai', feedback: 'Laporan Laba Rugi tepat presisi.' }
+        ];
+
+        let currentActiveQuiz = null;
+        let quizTimerInterval = null;
+        let currentSelectedStudentId = null;
+
+        /* Core Functions */
+        window.onload = function() {
+            renderSidebarNav();
+            renderDashboard();
+            renderDebitCreditRules();
+            renderBadges();
+            renderModules('all');
+            renderQuizzes();
+            renderAssignments();
+            renderTeacherTable();
+            initCharts();
+        };
+
+        function switchRole(roleKey) {
+            currentRoleKey = roleKey;
+            const user = USERS[roleKey];
+
+            document.getElementById('header-user-name').innerText = user.name;
+            document.getElementById('header-user-role').innerText = user.level + " • " + user.class;
+            document.getElementById('header-avatar').src = user.avatar;
+            document.getElementById('user-points-display').innerText = user.points + ' Poin';
+
+            const pointsBadge = document.getElementById('points-badge-container');
+            if (roleKey === 'guru') {
+                pointsBadge.classList.add('hidden');
+            } else {
+                pointsBadge.classList.remove('hidden');
+            }
+
+            document.getElementById('role-dropdown').classList.add('hidden');
+            renderSidebarNav();
+            renderDashboard();
+            showToast(`Berganti akun sebagai ${user.name} (${user.level})`, 'info');
+        }
+
+        function toggleRoleDropdown() {
+            document.getElementById('role-dropdown').classList.toggle('hidden');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+
+        function renderSidebarNav() {
+            const container = document.getElementById('sidebar-nav-container');
+            const isGuru = currentRoleKey === 'guru';
+
+            const items = isGuru ? [
+                { id: 'dashboard', label: 'Teacher Portal', icon: 'fa-chart-pie' },
+                { id: 'modul', label: 'Kelola Modul', icon: 'fa-book-open' }
+            ] : [
+                { id: 'dashboard', label: 'Dashboard', icon: 'fa-house' },
+                { id: 'modul', label: 'Modul & Jurnal', icon: 'fa-book-open' },
+                { id: 'asesmen', label: 'Kuis Interaktif', icon: 'fa-award' },
+                { id: 'tugas', label: 'Tugas Project', icon: 'fa-folder-open' }
+            ];
+
+            container.innerHTML = items.map(i => `
+                <button onclick="switchTab('${i.id}')" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    currentTab === i.id 
+                    ? 'bg-gradient-to-r from-brand-500 to-rose-500 text-white shadow-md shadow-brand-200' 
+                    : 'text-slate-600 hover:bg-brand-100/70 hover:text-brand-600'
+                }">
+                    <i class="fa-solid ${i.icon} w-4 text-center"></i>
+                    <span>${i.label}</span>
+                </button>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            const titleMap = {
+                dashboard: 'Dashboard Utama',
+                modul: 'Modul Pembelajaran & Jurnal',
+                asesmen: 'Kuis Akuntansi Interaktif',
+                tugas: 'Portal Tugas Project'
+            };
+            document.getElementById('page-title').innerText = titleMap[tabId] || 'Aktivita LMS';
+
+            renderSidebarNav();
+        }
+
+        function renderDashboard() {
+            const user = USERS[currentRoleKey];
+            const isGuru = currentRoleKey === 'guru';
+
+            document.getElementById('welcome-user-name').innerText = user.name;
+            document.getElementById('welcome-badge').innerText = isGuru ? "Portal Guru Utama ✨" : `Siswa Aktif ${user.level} ✨`;
+            document.getElementById('welcome-subtitle').innerText = isGuru 
+                ? "Pantau nilai akademik siswa, beri umpan balik tugas project, dan publikasikan modul baru."
+                : "Mari tingkatkan pemahaman akuntansi dasar, analisis transaksi, dan latihan jurnal umum hari ini!";
+
+            const studentContent = document.getElementById('student-dashboard-content');
+            const teacherContent = document.getElementById('teacher-dashboard-content');
+
+            if (isGuru) {
+                studentContent.classList.add('hidden');
+                teacherContent.classList.remove('hidden');
+            } else {
+                studentContent.classList.remove('hidden');
+                teacherContent.classList.add('hidden');
+
+                document.getElementById('stat-modul-done').innerText = user.modDone;
+                document.getElementById('stat-quiz-avg').innerText = user.quizAvg;
+                document.getElementById('stat-tasks-sent').innerText = user.tasksSent;
+                document.getElementById('stat-badge-count').innerText = user.badges.length + ' Badge';
+            }
+        }
+
+        function renderDebitCreditRules() {
+            const container = document.getElementById('debit-credit-cards-container');
+            if(!container) return;
+
+            container.innerHTML = debitCreditRules.map(r => `
+                <div class="glass-card rounded-2xl p-3 border border-brand-200">
+                    <div class="text-[10px] font-bold text-brand-600">${r.code}</div>
+                    <div class="font-extrabold text-xs text-slate-800 mb-2">${r.name}</div>
+                    <div class="space-y-1 text-[10px]">
+                        <div class="flex justify-between bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-bold">
+                            <span>(+) Bertambah</span>
+                            <span>${r.normal === 'Debit' ? 'DEBIT' : 'KREDIT'}</span>
+                        </div>
+                        <div class="flex justify-between bg-rose-50 text-rose-700 px-2 py-0.5 rounded-md font-bold">
+                            <span>(-) Berkurang</span>
+                            <span>${r.normal === 'Debit' ? 'KREDIT' : 'DEBIT'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderBadges() {
+            const container = document.getElementById('badges-container');
+            if(!container) return;
+
+            const user = USERS[currentRoleKey];
+            const userBadges = user.badges || [];
+
+            container.innerHTML = allBadges.map(b => {
+                const unlocked = userBadges.includes(b.title);
+                return `
+                    <div class="p-3 rounded-2xl border ${unlocked ? 'bg-gradient-to-tr from-brand-100 to-rose-50 border-brand-300' : 'bg-slate-100 border-slate-200 opacity-50'} flex flex-col items-center text-center">
+                        <div class="w-9 h-9 rounded-xl ${unlocked ? 'bg-gradient-to-r from-brand-500 to-rose-500 text-white shadow-md' : 'bg-slate-300 text-slate-500'} flex items-center justify-center mb-1.5">
+                            <i class="fa-solid ${b.icon} text-sm"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-800">${b.title}</span>
+                        <span class="text-[9px] text-slate-500">${b.desc}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* Journal Simulator Logic */
+        function verifyJournalAnswer() {
+            const currentEx = journalExercises[currentJournalIdx];
+            const debitAcc = document.getElementById('journal-debit-account').value;
+            const debitAmt = parseFloat(document.getElementById('journal-debit-amount').value) || 0;
+            const creditAcc = document.getElementById('journal-credit-account').value;
+            const creditAmt = parseFloat(document.getElementById('journal-credit-amount').value) || 0;
+
+            const feedbackEl = document.getElementById('journal-feedback');
+            feedbackEl.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+
+            if (debitAcc === currentEx.debitAcc && debitAmt === currentEx.debitAmt && creditAcc === currentEx.creditAcc && creditAmt === currentEx.creditAmt) {
+                feedbackEl.classList.add('bg-emerald-100', 'text-emerald-800');
+                feedbackEl.innerHTML = `✨ Sempurna! Penjurnalan seimbang senilai Rp ${debitAmt.toLocaleString('id-ID')}. Anda mendapatkan +50 Poin!`;
+                
+                USERS[currentRoleKey].points += 50;
+                document.getElementById('user-points-display').innerText = USERS[currentRoleKey].points + ' Poin';
+                
+                confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+                showToast("Jawaban Jurnal Benar (+50 Poin)", "success");
+            } else {
+                feedbackEl.classList.add('bg-rose-100', 'text-rose-800');
+                feedbackEl.innerHTML = `❌ Penjurnalan belum pas. Pastikan Debit: ${currentEx.debitAcc} & Kredit: ${currentEx.creditAcc} bernilai Rp ${currentEx.debitAmt.toLocaleString('id-ID')}.`;
+            }
+        }
+
+        function nextJournalExercise() {
+            currentJournalIdx = (currentJournalIdx + 1) % journalExercises.length;
+            document.getElementById('journal-exercise-prompt').innerText = journalExercises[currentJournalIdx].prompt;
+            document.getElementById('journal-debit-account').value = '';
+            document.getElementById('journal-debit-amount').value = '';
+            document.getElementById('journal-credit-account').value = '';
+            document.getElementById('journal-credit-amount').value = '';
+            document.getElementById('journal-feedback').classList.add('hidden');
+        }
+
+        /* Modules Render & Filter */
+        function renderModules(filterClass) {
+            const container = document.getElementById('modules-list-container');
+            if(!container) return;
+
+            let filtered = modulesData;
+            if (filterClass !== 'all') {
+                filtered = modulesData.filter(m => m.classLevel === filterClass);
+            }
+
+            container.innerHTML = filtered.map(m => `
+                <div class="glass-card rounded-3xl p-5 border border-brand-200 flex flex-col justify-between hover:scale-[1.02] transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-extrabold">Kelas ${m.classLevel}</span>
+                            <span class="text-[10px] text-slate-500 font-bold"><i class="fa-regular fa-clock text-brand-500"></i> ${m.duration}</span>
+                        </div>
+                        <h4 class="font-extrabold text-sm text-slate-800 mb-1.5">${m.title}</h4>
+                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">${m.desc}</p>
+                    </div>
+                    <div class="pt-3 border-t border-brand-100 flex items-center justify-between">
+                        <span class="text-[10px] font-bold ${m.completed ? 'text-emerald-600' : 'text-slate-400'}">
+                            ${m.completed ? '<i class="fa-solid fa-check-circle"></i> Selesai' : 'Belum Dibaca'}
+                        </span>
+                        <button onclick="showToast('Membaca modul ${m.title}', 'info')" class="px-3.5 py-1.5 rounded-xl bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-200 hover:bg-brand-600">
+                            Baca Modul
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterModuleClass(classLvl) {
+            document.querySelectorAll('.mod-filter-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-brand-600', 'shadow-sm');
+                b.classList.add('text-slate-600');
+            });
+            const activeBtn = document.getElementById(`btn-mod-${classLvl}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white', 'text-brand-600', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600');
+            }
+            renderModules(classLvl);
+        }
+
+        /* Quizzes Engine */
+        function renderQuizzes() {
+            const container = document.getElementById('quizzes-container');
+            if(!container) return;
+
+            container.innerHTML = quizzesData.map(q => `
+                <div class="glass-card rounded-3xl p-6 border border-brand-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold">Kelas ${q.classLevel}</span>
+                            <span class="text-xs font-bold text-brand-600">${q.timeMinutes} Menit</span>
+                        </div>
+                        <h3 class="font-extrabold text-base text-slate-800 mb-2">${q.title}</h3>
+                        <p class="text-xs text-slate-500 mb-4">${q.questions.length} Soal Pilihan Ganda • Sertifikat Badge</p>
+                    </div>
+                    <button onclick="startQuiz('${q.id}')" class="w-full py-2.5 rounded-2xl bg-gradient-to-r from-brand-500 to-rose-500 hover:from-brand-600 hover:to-rose-600 text-white font-bold text-xs shadow-lg shadow-brand-200 transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Mulai Kuis</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function startQuiz(quizId) {
+            const quiz = quizzesData.find(q => q.id === quizId);
+            if(!quiz) return;
+
+            currentActiveQuiz = quiz;
+            document.getElementById('quiz-modal-category').innerText = `Kuis Kelas ${quiz.classLevel}`;
+            document.getElementById('quiz-modal-title').innerText = quiz.title;
+
+            const qContainer = document.getElementById('quiz-question-container');
+            qContainer.innerHTML = quiz.questions.map((q, idx) => `
+                <div class="bg-brand-50/60 p-4 rounded-2xl border border-brand-200">
+                    <div class="text-xs font-bold text-brand-700 mb-2">Soal No. ${idx + 1}</div>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-800 mb-3">${q.q}</p>
+                    <div class="space-y-2">
+                        ${q.options.map((opt, oIdx) => `
+                            <label class="flex items-center space-x-3 p-2.5 rounded-xl bg-white border border-brand-200 hover:bg-brand-100/60 cursor-pointer text-xs font-medium">
+                                <input type="radio" name="quiz-q-${idx}" value="${oIdx}" class="text-brand-600">
+                                <span>${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            let secondsLeft = quiz.timeMinutes * 60;
+            const timerEl = document.getElementById('quiz-timer');
+            
+            clearInterval(quizTimerInterval);
+            quizTimerInterval = setInterval(() => {
+                secondsLeft--;
+                const m = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
+                const s = (secondsLeft % 60).toString().padStart(2, '0');
+                timerEl.innerText = `${m}:${s}`;
+
+                if (secondsLeft <= 0) {
+                    clearInterval(quizTimerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+
+            document.getElementById('quiz-modal').classList.remove('hidden');
+        }
+
+        function closeQuizModal() {
+            clearInterval(quizTimerInterval);
+            document.getElementById('quiz-modal').classList.add('hidden');
+        }
+
+        function submitQuiz() {
+            clearInterval(quizTimerInterval);
+            if(!currentActiveQuiz) return;
+
+            let correctCount = 0;
+            currentActiveQuiz.questions.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="quiz-q-${idx}"]:checked`);
+                if(selected && parseInt(selected.value) === q.correctIdx) {
+                    correctCount++;
+                }
+            });
+
+            const score = Math.round((correctCount / currentActiveQuiz.questions.length) * 100);
+            USERS[currentRoleKey].points += score;
+            document.getElementById('user-points-display').innerText = USERS[currentRoleKey].points + ' Poin';
+
+            closeQuizModal();
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            showToast(`Kuis Selesai! Skor Anda: ${score}/100 (+${score} Poin)`, 'success');
+        }
+
+        /* Assignments Render */
+        function renderAssignments() {
+            const container = document.getElementById('assignments-list-container');
+            if(!container) return;
+
+            const assignments = [
+                { title: 'Laporan Keuangan Perusahaan Jasa "Salon Cantika"', classLevel: 'X', deadline: '25 Oktober 2026', grade: '95/100', feedback: 'Format neraca sangat presisi!' },
+                { title: 'Perhitungan PPh Pasal 21 Karyawan Tetap', classLevel: 'XI', deadline: '28 Oktober 2026', grade: '-', feedback: 'Belum dikirim' }
+            ];
+
+            container.innerHTML = assignments.map(a => `
+                <div class="p-4 rounded-2xl bg-white/80 border border-brand-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-bold">Kelas ${a.classLevel}</span>
+                            <span class="text-[11px] text-slate-500">Tenggat: ${a.deadline}</span>
+                        </div>
+                        <h4 class="font-extrabold text-xs sm:text-sm text-slate-800">${a.title}</h4>
+                        <div class="text-[11px] text-slate-500">Catatan Guru: <span class="text-brand-600 font-semibold">${a.feedback}</span></div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <div class="text-[10px] text-slate-500 font-bold">Nilai</div>
+                            <div class="text-sm font-black text-brand-600">${a.grade}</div>
+                        </div>
+                        <button onclick="showToast('Mengunggah berkas tugas...', 'info')" class="px-3.5 py-1.5 rounded-xl bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-200">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* Teacher Portal Logic */
+        function renderTeacherTable() {
+            const tbody = document.getElementById('teacher-submissions-tbody');
+            if(!tbody) return;
+
+            tbody.innerHTML = submissionsData.map(s => `
+                <tr class="hover:bg-brand-50/50">
+                    <td class="p-3 font-bold text-slate-800">${s.student}</td>
+                    <td class="p-3 text-slate-600">${s.class}</td>
+                    <td class="p-3 font-medium text-brand-700">${s.project}</td>
+                    <td class="p-3 text-slate-500">${s.date}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${s.score ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                            ${s.score ? `Nilai: ${s.score}` : 'Perlu Dinilai'}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="openGradingModal(${s.id})" class="px-3 py-1 rounded-lg bg-brand-500 text-white font-bold text-[10px] shadow-sm hover:bg-brand-600">
+                            Beri Nilai
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openGradingModal(subId) {
+            currentSelectedStudentId = subId;
+            const sub = submissionsData.find(s => s.id === subId);
+            if(!sub) return;
+
+            document.getElementById('grading-student-info').innerText = `${sub.student} - ${sub.project}`;
+            document.getElementById('grading-score-input').value = sub.score || '';
+            document.getElementById('grading-feedback-input').value = sub.feedback || '';
+            document.getElementById('grading-modal').classList.remove('hidden');
+        }
+
+        function closeGradingModal() {
+            document.getElementById('grading-modal').classList.add('hidden');
+        }
+
+        function saveStudentGrade() {
+            const scoreVal = parseFloat(document.getElementById('grading-score-input').value);
+            const feedbackVal = document.getElementById('grading-feedback-input').value;
+
+            const sub = submissionsData.find(s => s.id === currentSelectedStudentId);
+            if(sub) {
+                sub.score = scoreVal;
+                sub.feedback = feedbackVal;
+                sub.status = 'Sudah Dinilai';
+                renderTeacherTable();
+                closeGradingModal();
+                showToast(`Nilai berhasil disimpan untuk ${sub.student}`, 'success');
+            }
+        }
+
+        function openAddModuleModal() {
+            document.getElementById('add-module-modal').classList.remove('hidden');
+        }
+
+        function closeAddModuleModal() {
+            document.getElementById('add-module-modal').classList.add('hidden');
+        }
+
+        function saveNewModule() {
+            const classLvl = document.getElementById('new-mod-class').value;
+            const title = document.getElementById('new-mod-title').value;
+            const desc = document.getElementById('new-mod-desc').value;
+
+            if(!title) {
+                showToast("Judul modul wajib diisi!", "error");
+                return;
+            }
+
+            modulesData.push({
+                id: Date.now(),
+                classLevel: classLvl,
+                title: title,
+                desc: desc || "Ringkasan materi akuntansi.",
+                duration: '4 JP',
+                completed: false
+            });
+
+            renderModules('all');
+            closeAddModuleModal();
+            showToast("Modul baru berhasil dipublikasikan!", "success");
+        }
+
+        function initCharts() {
+            const ctx1 = document.getElementById('chart-class-performance');
+            if(ctx1) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Kelas X AK 1', 'Kelas X AK 2', 'Kelas XI AK 1', 'Kelas XI AK 2', 'Kelas XII AK 1'],
+                        datasets: [{
+                            label: 'Rata-Rata Nilai Kuis',
+                            data: [88, 85, 92, 90, 96],
+                            backgroundColor: 'rgba(236, 72, 153, 0.75)',
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, max: 100 } }
+                    }
+                });
+            }
+
+            const ctx2 = document.getElementById('chart-quiz-passrate');
+            if(ctx2) {
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Lulus (>=80)', 'Remedial (<80)'],
+                        datasets: [{
+                            data: [92, 8],
+                            backgroundColor: ['#ec4899', '#fbcfe8']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if(!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `glass-card p-3 rounded-2xl border shadow-xl flex items-center space-x-2 text-xs font-bold pointer-events-auto transition-all ${
+                type === 'success' ? 'bg-emerald-500 text-white border-emerald-400' :
+                type === 'error' ? 'bg-rose-500 text-white border-rose-400' :
+                'bg-brand-600 text-white border-brand-400'
+            }`;
+
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
